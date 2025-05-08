@@ -12,6 +12,7 @@ export default function Books() {
 
     const [books, setBooks] = useState([]);
     const [page, setPage] = useState(0);
+    const [loadable, setLoadable] = useState(true);
 
     const username = localStorage.getItem('username');
     const accessToken = localStorage.getItem('accessToken');
@@ -56,9 +57,14 @@ export default function Books() {
                 direction: 'asc'
             }
          });
-
-         setBooks([ ...books, ...response.data._embedded.bookVoes])
-         setPage(page + 1);
+         if (response.data._embedded) {
+            setBooks([ ...books, ...response.data._embedded.bookVoes])
+            setPage(page + 1);
+            setLoadable(true);
+         } else {
+            setLoadable(false);
+         }
+         
     }
 
     useEffect(() => {
@@ -100,7 +106,7 @@ export default function Books() {
                 ))}
             </ul>
 
-            <button className="button" onClick={fetchMoreBooks} type="button">Load more</button>
+            <button className="button" onClick={fetchMoreBooks} type="button" disabled={!loadable}>{loadable ? 'Load more' : 'No more Books'}</button>
         </div>
     );
 }
